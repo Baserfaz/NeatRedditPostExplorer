@@ -48,11 +48,15 @@ table {
 	border-spacing: 0;
 }
 
-/* App styling  */
+/* 
+    App styling  
+    Heikki Heiskanen 2017
+*/
 
 html {
     box-sizing: border-box;
     font-family: 'Raleway', sans-serif;
+    background-color: moccasin;
 }
 
 h1, h2, h3, h4, h5, h6, h7, h8, p, a, span  {
@@ -69,6 +73,7 @@ a {
     color: #333;
     line-height: 1.5rem;
     text-decoration: none;
+    overflow-wrap: break-word;
 }
 
 a:hover {
@@ -79,7 +84,23 @@ a:hover {
     width: auto;
     margin: 0 auto;
     padding: 15px;
-    background-color: moccasin;
+}
+
+#header {
+    margin: 1rem;
+}
+
+#inputfield {
+    margin: 1rem 0;
+}
+
+input {
+    margin: 0 1rem;
+    padding: 3px;
+}
+
+button {
+    padding: 3px 10px;
 }
 
 #posts {
@@ -110,6 +131,8 @@ a:hover {
     color: #ccc;
     font-style: italic;
 }
+
+/* font awesome */
 
 .fa-thumbs-o-up {
     color: #1F58D3;

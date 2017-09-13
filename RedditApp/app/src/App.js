@@ -4,74 +4,106 @@ import './App.css';
 
 class App extends Component {
 
-  constructor() {
-    super();
-    this.state = { posts: [] };
-    this.count = 40;
-    this.url = 'https://www.reddit.com/r/monkslookingatbeer/.json?limit=' + this.count;
-  }
+    constructor() {
+        super();
 
-  componentDidMount() {
-    
-    // ajax GET first page posts.
-    axios.get(this.url).then( res => { 
-      var posts = res.data.data.children.map(obj => obj.data);
-      this.setState({ posts })
-      //console.log(posts);
-     });
-     
-  }
+        this.state = { posts: [], subreddit: '/r/monkslookingatbeer/' };
+        this.count = 40;
+        this.url = 'https://www.reddit.com';
+    }
 
-  getPosts(e) {
+    changeSubredditState(event) { this.setState({ subreddit: event.target.value }); }
 
-    e.preventDefault();
+    componentDidMount() {
 
-    // get the last item information
-    var posts = this.state.posts;
-    var lastItem = posts[posts.length - 1];
+        let url = this.url + this.state.subreddit + '.json?limit=' + this.count;
 
-    // create the next url 
-    var url = this.url + '?limit=' + this.count + '&after=' + lastItem.name;
+        // ajax GET first page posts.
+        axios.get(url).then(res => {
+            var posts = res.data.data.children.map(obj => obj.data);
+            this.setState({ posts })
+        });
 
-    // ajax GET next posts
-    axios.get(url).then( res => { 
-      var posts = res.data.data.children.map(obj => obj.data);
-      this.setState({ posts })
-    });
+    }
 
-    // finally scroll back to top
-    window.scrollTo(0, 0);
-  }
+    getMorePosts(e) {
+        
+        // this method is called by a link, 
+        // so we want to prevent the link's behavior.
+        e.preventDefault();
 
-  render() {
-    return (
-      <div className="App">
-        <h1>Posts from /r/monkslookingatbeer</h1>
-        <p>Links open up in a new window.</p>
+        // get the last item information
+        var posts = this.state.posts;
+        var lastItem = posts[posts.length - 1];
 
-        <ul id = 'posts'>
-          {
-            this.state.posts.map(
-              post =>
-                <li className = 'post'  key = { post.id }>
-                  <a href = { 'http://www.reddit.com' + post.permalink } target = '_blank'>{ post.title }</a>
-                  <p className = 'votes'><i className="fa fa-thumbs-o-up"></i> { post.ups } &nbsp; <i className="fa fa-thumbs-o-down"></i> { post.downs }</p>
-                  <a className = 'user' href = { 'http://www.reddit.com/user/' + post.author } target = '_blank'><i className="fa fa-user-o"></i> { post.author }</a>
-                  <img src = { post.thumbnail } alt = '' />
-                </li>
-            )
-          }
+        // create the next post's url 
+        var url = this.url + this.state.subreddit + '.json?limit=' + this.count + '&after=' + lastItem.name;
 
-          {
-            <li className = 'post'>
-                <a href='/' onClick = { this.getPosts.bind(this) }>Get more posts <i className='fa fa-arrow-circle-o-right'></i></a>
-            </li>
-          }
+        // ajax GET next posts
+        axios.get(url).then(res => {
+            var posts = res.data.data.children.map(obj => obj.data);
+            this.setState({ posts })
+        });
 
-        </ul>
-      </div>
-    );
-  }
+        // finally scroll back to top
+        window.scrollTo(0, 0);
+    }
+
+    getNewPosts() { 
+
+        // create the next url 
+        var url = this.url + this.state.subreddit + '.json?limit=' + this.count;
+
+        // ajax GET next posts
+        axios.get(url)
+            .then(res => {
+                var posts = res.data.data.children.map(obj => obj.data);
+                this.setState({ posts })
+            })
+            .catch(res => {
+                //console.log(res);
+                alert('No subreddits found!');
+            }
+        );
+    }
+
+    render() {
+        return (
+            <div className="App">
+
+                <div id = 'header'>
+                    <h1>Posts from { this.state.subreddit }</h1>
+
+                    <div id = 'inputfield'>
+                        <label htmlFor = 'input'>Get posts from subreddit: </label>
+                        <input className = 'input' defaultValue = { this.state.subreddit } onChange = { this.changeSubredditState.bind(this) } ></input>
+                        <button onClick = { this.getNewPosts.bind(this) }>Go!</button>
+                    </div>
+                </div>
+
+                <ul id='posts'>
+
+                    {
+                        this.state.posts.map(post =>
+                            <li className = 'post' key = { post.id }>
+                                <a href = { 'http://www.reddit.com' + post.permalink } target='_blank'>{ post.title }</a>
+                                <p className = 'votes'><i className = "fa fa-thumbs-o-up"></i> { post.ups }</p>
+                                <a className = 'user' href = { 'http://www.reddit.com/user/' + post.author } target='_blank'><i className = "fa fa-user-o"></i> { post.author }</a>
+                                <img src = { post.thumbnail } alt='' />
+                            </li>
+                        )
+                    }
+
+                    {
+                        <li className='post'>
+                            <a href='/' onClick = { this.getMorePosts.bind(this) }>Load more posts <i className = 'fa fa-arrow-circle-o-right'></i></a>
+                        </li>
+                    }
+
+                </ul>
+            </div>
+        );
+    }
 }
 
 export default App;
