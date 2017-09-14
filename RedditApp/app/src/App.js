@@ -101,6 +101,8 @@ class App extends Component {
                     }
 
                 </ul>
+
+                <div id = 'footer'><p>Heikki Heiskanen &copy; 2017</p></div>
             </div>
         );
     }
