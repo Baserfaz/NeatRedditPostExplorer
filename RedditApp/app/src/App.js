@@ -7,7 +7,7 @@ class App extends Component {
     constructor() {
         super();
 
-        this.state = { posts: [], subreddit: '/r/monkslookingatbeer/' };
+        this.state = { posts: [], subreddit: '/r/monkslookingatbeer/', currentSubreddit: '' };
         this.count = 40;
         this.url = 'https://www.reddit.com';
     }
@@ -24,6 +24,7 @@ class App extends Component {
             this.setState({ posts })
         });
 
+        this.setState({ currentSubreddit: this.state.subreddit });
     }
 
     getMorePosts(e) {
@@ -37,7 +38,7 @@ class App extends Component {
         var lastItem = posts[posts.length - 1];
 
         // create the next post's url 
-        var url = this.url + this.state.subreddit + '.json?limit=' + this.count + '&after=' + lastItem.name;
+        var url = this.url + this.state.currentSubreddit + '.json?limit=' + this.count + '&after=' + lastItem.name;
 
         // ajax GET next posts
         axios.get(url).then(res => {
@@ -59,9 +60,10 @@ class App extends Component {
             .then(res => {
                 var posts = res.data.data.children.map(obj => obj.data);
                 this.setState({ posts })
+
+                this.setState({ currentSubreddit: this.state.subreddit });
             })
             .catch(res => {
-                //console.log(res);
                 alert('No subreddits found!');
             }
         );
@@ -69,16 +71,17 @@ class App extends Component {
 
     render() {
         return (
-            <div className="App">
+            <div id = 'app'>
 
                 <div id = 'header'>
-                    <h1>Posts from { this.state.subreddit }</h1>
+                    <h1>Neat Reddit Post Explorer</h1>
+                    <h2>Currently reading posts from { this.state.currentSubreddit }</h2>
 
                     <div id = 'inputfield'>
-                        <label htmlFor = 'input'>Get posts from subreddit: </label>
-                        <input className = 'input' defaultValue = { this.state.subreddit } onChange = { this.changeSubredditState.bind(this) } ></input>
+                        <input type = 'text' className = 'input' defaultValue = { this.state.subreddit } onChange = { this.changeSubredditState.bind(this) } ></input>
                         <button onClick = { this.getNewPosts.bind(this) }>Go!</button>
                     </div>
+
                 </div>
 
                 <ul id='posts'>

@@ -56,7 +56,10 @@ table {
 html {
     box-sizing: border-box;
     font-family: 'Raleway', sans-serif;
-    background-color: moccasin;
+}
+
+body {
+    background-color: #f3f9fe;
 }
 
 h1, h2, h3, h4, h5, h6, h7, h8, p, a, span  {
@@ -65,12 +68,12 @@ h1, h2, h3, h4, h5, h6, h7, h8, p, a, span  {
 }
 
 h1 {
-    font-size: 21px;
+    font-size: 36px;
+    padding: 1rem 0 0 0;
 }
 
 a {
     font-weight: 400;
-    color: #333;
     line-height: 1.5rem;
     text-decoration: none;
     overflow-wrap: break-word;
@@ -80,14 +83,15 @@ a:hover {
     text-decoration: underline;
 }
 
-#root {
-    width: auto;
+#app {
+    width: 75%;
     margin: 0 auto;
-    padding: 15px;
+    background-color: #fff;
 }
 
 #header {
     margin: 1rem;
+    text-align: center;
 }
 
 #footer {
@@ -102,12 +106,21 @@ a:hover {
 }
 
 input {
-    margin: 0 1rem;
-    padding: 3px;
+    margin: 0 1rem 0 0;
+    padding: 5px;
+    width: 40%;
+    background-color: #F1A93C;
+    font-family: 'Raleway', sans-serif;
+    border: none;
+    color: #333;
 }
 
 button {
-    padding: 3px 10px;
+    padding: 5px 10px;
+    background-color: #F1A93C;
+    border: none;
+    font-family: 'Raleway', sans-serif;
+    color: #333;
 }
 
 #posts {
@@ -115,14 +128,16 @@ button {
     flex-direction: row;
     flex-wrap: wrap;
     align-items: flex-start;
+    justify-content: center;
 }
 
 .post {
     width: 200px;
     height: 100%;
     margin: 1rem;
-    background-color: #f1f1f1;
+    background-color: #eee;
     padding: 1rem;
+    border-radius: 5px;
 }
 
 .post img {
