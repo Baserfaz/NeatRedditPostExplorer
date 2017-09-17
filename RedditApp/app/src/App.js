@@ -1,30 +1,31 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import './App.css';
+import { DB_CONFIG } from './Config/config';
+import firebase from 'firebase/app';
+import 'firebase/database';
+
+import Header from './Header/Header';
+import Footer from './Footer/Footer';
+import Content from './Content/Content';
 
 class App extends Component {
 
     constructor() {
         super();
 
-        this.state = { posts: [], subreddit: '/r/monkslookingatbeer/', currentSubreddit: '' };
+        firebase.initializeApp(DB_CONFIG);
+
+        this.state = { posts: [], subreddit: '/r/monkslookingatbeer', currentSubreddit: '', topFive: [] };
         this.count = 40;
         this.url = 'https://www.reddit.com';
+
+        this.getTopFiveSubreddits = this.getTopFiveSubreddits.bind(this);
     }
 
-    changeSubredditState(event) { this.setState({ subreddit: event.target.value }); }
-
+    // updates topfive once every page reload
     componentDidMount() {
-
-        let url = this.url + this.state.subreddit + '.json?limit=' + this.count;
-
-        // ajax GET first page posts.
-        axios.get(url).then(res => {
-            var posts = res.data.data.children.map(obj => obj.data);
-            this.setState({ posts })
-        });
-
-        this.setState({ currentSubreddit: this.state.subreddit });
+        this.getTopFiveSubreddits();
     }
 
     getMorePosts(e) {
@@ -50,6 +51,8 @@ class App extends Component {
         window.scrollTo(0, 0);
     }
 
+    changeSubredditState(event) { this.setState({ subreddit: event.target.value }); }
+
     getNewPosts() { 
 
         // create the next url 
@@ -58,10 +61,14 @@ class App extends Component {
         // ajax GET next posts
         axios.get(url)
             .then(res => {
+
+                // GET is successful
                 var posts = res.data.data.children.map(obj => obj.data);
                 this.setState({ posts })
-
                 this.setState({ currentSubreddit: this.state.subreddit });
+
+                this.writeData(this.state.subreddit);
+
             })
             .catch(res => {
                 alert('No subreddits found!');
@@ -69,43 +76,102 @@ class App extends Component {
         );
     }
 
+    getTopFiveSubreddits() {
+
+        var objs = [];
+
+        firebase.database().ref('searches').orderByChild('count').limitToLast(5).once('value').then((snap) => {
+            
+            // create objects and push them to an array.
+            snap.forEach(function (snapshot) {
+                var obj = snapshot.val();
+
+                let name = obj.subreddit;
+                let hitcount = obj.count;
+
+                objs.push({name, hitcount});
+            });
+
+            // orderByChild('count') orders the data in ascending order
+            // therefore we need to reverse the array to get descending order.
+            objs = objs.reverse();
+
+            this.setState({ topFive: objs });
+        });
+    }
+
+    // Arguments:
+    // data (string): the name of the subreddit 
+    writeData(data) {
+        
+        // remove '/r/'
+        data = data.substring(3, data.length);
+
+        var elementExists = false;
+        var hitCount = 0;
+
+        // get db 
+        firebase.database().ref('searches').once('value', function(snap) {
+
+            // loop through the db data
+            snap.forEach(function (snapshot) {
+                var obj = snapshot.val();
+
+                // if to be added data already exists in DB
+                if(obj.subreddit === data) {
+                    elementExists = true;
+                    hitCount = obj.count;
+
+                    // TODO: implement other type of for-loop
+                    // because forEach doesn't support break.
+
+                }
+
+            })
+
+            if(elementExists) {
+                // update data
+    
+                hitCount += 1;
+                var updates = {};
+                updates['count'] = hitCount;
+    
+                firebase.database().ref().child('searches/' + data).update(updates).then(function() {
+                    //console.log('SUCCESSFULLY UPDATED DATA FIELD');
+                }).catch(function(error) {
+                    console.log(error);
+                });
+    
+            } else {
+                // create new data
+                
+                firebase.database().ref().child('searches/' + data).set({ subreddit: data, count: 1 }).then(function() {
+                    //console.log('SUCCESSFULLY CREATED NEW DATA FIELD');
+                }).catch(function(error) {
+                    console.log(error);
+                });
+    
+            }
+
+        });
+    }
+
     render() {
         return (
             <div id = 'app'>
 
-                <div id = 'header'>
-                    <h1>Neat Reddit Post Explorer</h1>
-                    <h2>Currently reading posts from { this.state.currentSubreddit }</h2>
+                <Header 
+                    getNewPosts = { this.getNewPosts.bind(this) } 
+                    changeSubredditState = { this.changeSubredditState.bind(this) } 
+                    subReddit = { this.state.subreddit } 
+                    currentSubreddit = { this.state.currentSubreddit }
+                    topFive = { this.state.topFive }
+                />
 
-                    <div id = 'inputfield'>
-                        <input type = 'text' className = 'input' defaultValue = { this.state.subreddit } onChange = { this.changeSubredditState.bind(this) } ></input>
-                        <button onClick = { this.getNewPosts.bind(this) }>Go!</button>
-                    </div>
+                <Content posts = { this.state.posts } getMorePosts = { this.getMorePosts.bind(this) } />
 
-                </div>
+                <Footer/>
 
-                <ul id='posts'>
-
-                    {
-                        this.state.posts.map(post =>
-                            <li className = 'post' key = { post.id }>
-                                <a href = { 'http://www.reddit.com' + post.permalink } target='_blank'>{ post.title }</a>
-                                <p className = 'votes'><i className = "fa fa-thumbs-o-up"></i> { post.ups }</p>
-                                <a className = 'user' href = { 'http://www.reddit.com/user/' + post.author } target='_blank'><i className = "fa fa-user-o"></i> { post.author }</a>
-                                <img src = { post.thumbnail } alt='' />
-                            </li>
-                        )
-                    }
-
-                    {
-                        <li className='post'>
-                            <a href='/' onClick = { this.getMorePosts.bind(this) }>Load more posts <i className = 'fa fa-arrow-circle-o-right'></i></a>
-                        </li>
-                    }
-
-                </ul>
-
-                <div id = 'footer'><p>Heikki Heiskanen &copy; 2017</p></div>
             </div>
         );
     }
