@@ -5,9 +5,12 @@ import { DB_CONFIG } from './Config/config';
 import firebase from 'firebase/app';
 import 'firebase/database';
 
-import Header from './Header/Header';
-import Footer from './Footer/Footer';
-import Content from './Content/Content';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
+import Header from './Components/Header/Header';
+import Footer from './Components/Footer/Footer';
+import Content from './Components/Content/Content';
+import TopFive from './Components/TopFive/TopFive';
 
 class App extends Component {
 
@@ -52,6 +55,16 @@ class App extends Component {
     }
 
     changeSubredditState(event) { this.setState({ subreddit: event.target.value }); }
+    
+    changeSubredditStateWithString(subredditName) {
+        var fullName = '/r/' + subredditName;   
+
+        // console.log('clicked', fullName);
+
+        this.setState({ subreddit: fullName }, function() {
+            this.getNewPosts();
+        });
+    }
 
     getNewPosts() { 
 
@@ -158,21 +171,23 @@ class App extends Component {
 
     render() {
         return (
-            <div id = 'app'>
+            <MuiThemeProvider>
+                <div id = 'app'>
 
-                <Header 
-                    getNewPosts = { this.getNewPosts.bind(this) } 
-                    changeSubredditState = { this.changeSubredditState.bind(this) } 
-                    subReddit = { this.state.subreddit } 
-                    currentSubreddit = { this.state.currentSubreddit }
-                    topFive = { this.state.topFive }
-                />
+                    <Header 
+                        getNewPosts = { this.getNewPosts.bind(this) } 
+                        changeSubredditState = { this.changeSubredditState.bind(this) } 
+                        subReddit = { this.state.subreddit } 
+                        currentSubreddit = { this.state.currentSubreddit }
+                    />
 
-                <Content posts = { this.state.posts } getMorePosts = { this.getMorePosts.bind(this) } />
+                    <TopFive topFive = { this.state.topFive } changeSubredditStateWithString = { this.changeSubredditStateWithString.bind(this) }/>
+                    <Content posts = { this.state.posts } getMorePosts = { this.getMorePosts.bind(this) } />
 
-                <Footer/>
+                    <Footer/>
 
-            </div>
+                </div>
+            </MuiThemeProvider>
         );
     }
 }

@@ -23,6 +23,7 @@ class Content extends Component {
     render(props) {
 
         return (
+
             <ul id='posts'>
 
                 {

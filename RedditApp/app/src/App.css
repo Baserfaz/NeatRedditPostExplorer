@@ -70,7 +70,7 @@ h1, h2, h3, h4, h5, h6, h7, h8, p, a, span  {
 
 h1 {
     font-size: 36px;
-    padding: 1rem 0 0 0;
+    padding: 2rem 0 0 0;
 }
 
 a {
@@ -87,7 +87,6 @@ a:hover {
 #app {
     width: 75%;
     margin: 0 auto;
-    /* background-color: #fff; */
 }
 
 #header {
@@ -97,28 +96,13 @@ a:hover {
     border-radius: 15px;
 }
 
-#top5 {
-    display: inline-block;
-    text-align: left;
-    padding-bottom: 1rem;
-    line-height: 0.5rem;
-}
-
-#top5 h3 {
-    text-align: center;
-    font-size: 18px;
-}
-
-#top5 ul li p {
-    line-height: 1.5rem;
-}
-
 #footer {
     text-align: center;
     font-size: 14px;
     margin: 1rem;
     background-color: #f1f1f1;
     border-radius: 15px;
+    clear: both;
 }
 
 #footer p {
@@ -130,30 +114,12 @@ a:hover {
     padding: 1rem 0;
 }
 
-input {
-    margin: 0 1rem 0 0;
-    padding: 5px;
-    width: 40%;
-    background-color: #F1A93C;
-    font-family: 'Raleway', sans-serif;
-    border: none;
-    color: #333;
-}
-
-button {
-    padding: 5px 10px;
-    background-color: #F1A93C;
-    border: none;
-    font-family: 'Raleway', sans-serif;
-    color: #333;
-}
-
 #posts {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: flex-start;
-    justify-content: center;
+    justify-content: left;
 }
 
 .post {
@@ -162,7 +128,7 @@ button {
     margin: 1rem;
     background-color: #eee;
     padding: 1rem;
-    border-radius: 5px;
+    border-radius: 15px;
 }
 
 .post img {
