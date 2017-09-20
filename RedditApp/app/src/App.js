@@ -10,7 +10,6 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Header from './Components/Header/Header';
 import Footer from './Components/Footer/Footer';
 import Content from './Components/Content/Content';
-import TopFive from './Components/TopFive/TopFive';
 
 class App extends Component {
 
@@ -19,17 +18,14 @@ class App extends Component {
 
         firebase.initializeApp(DB_CONFIG);
 
-        this.state = { posts: [], subreddit: '/r/monkslookingatbeer', currentSubreddit: '', topFive: [] };
+        this.state = { posts: [], subreddit: '', currentSubreddit: '', viewedSubreddits: [] };
         this.count = 40;
         this.url = 'https://www.reddit.com';
 
-        this.getTopFiveSubreddits = this.getTopFiveSubreddits.bind(this);
+        this.getViewedSubreddits = this.getViewedSubreddits.bind(this);
     }
 
-    // updates topfive once every page reload
-    componentDidMount() {
-        this.getTopFiveSubreddits();
-    }
+    componentDidMount() { this.getViewedSubreddits(true); }
 
     getMorePosts(e) {
         
@@ -54,12 +50,17 @@ class App extends Component {
         window.scrollTo(0, 0);
     }
 
-    changeSubredditState(event) { this.setState({ subreddit: event.target.value }); }
-    
-    changeSubredditStateWithString(subredditName) {
-        var fullName = '/r/' + subredditName;   
+    changeSubredditState(event) { 
+        this.setState({ subreddit: '/r/' + event.target.value });
+    }
 
-        // console.log('clicked', fullName);
+    changeSubredditStateWithStringNoAutoSearch(subredditName) {
+        var fullName = '/r/' + subredditName;
+        this.setState({ subreddit: fullName });
+    }
+
+    changeSubredditStateWithString(subredditName) {
+        var fullName = '/r/' + subredditName;
 
         this.setState({ subreddit: fullName }, function() {
             this.getNewPosts();
@@ -89,11 +90,11 @@ class App extends Component {
         );
     }
 
-    getTopFiveSubreddits() {
+    getViewedSubreddits(getOnlyNames) {
 
         var objs = [];
 
-        firebase.database().ref('searches').orderByChild('count').limitToLast(5).once('value').then((snap) => {
+        firebase.database().ref('searches').orderByChild('count').limitToLast(20).once('value').then((snap) => {
             
             // create objects and push them to an array.
             snap.forEach(function (snapshot) {
@@ -101,15 +102,17 @@ class App extends Component {
 
                 let name = obj.subreddit;
                 let hitcount = obj.count;
+                
+                if(getOnlyNames) { objs.push(name); } 
+                else { objs.push({name, hitcount}); }
 
-                objs.push({name, hitcount});
             });
 
             // orderByChild('count') orders the data in ascending order
             // therefore we need to reverse the array to get descending order.
             objs = objs.reverse();
 
-            this.setState({ topFive: objs });
+            this.setState({ viewedSubreddits: objs });
         });
     }
 
@@ -176,12 +179,12 @@ class App extends Component {
 
                     <Header 
                         getNewPosts = { this.getNewPosts.bind(this) } 
-                        changeSubredditState = { this.changeSubredditState.bind(this) } 
+                        changeSubredditState = { this.changeSubredditStateWithStringNoAutoSearch.bind(this) } 
                         subReddit = { this.state.subreddit } 
                         currentSubreddit = { this.state.currentSubreddit }
+                        viewedSubreddits = { this.state.viewedSubreddits }
                     />
 
-                    <TopFive topFive = { this.state.topFive } changeSubredditStateWithString = { this.changeSubredditStateWithString.bind(this) }/>
                     <Content posts = { this.state.posts } getMorePosts = { this.getMorePosts.bind(this) } />
 
                     <Footer/>

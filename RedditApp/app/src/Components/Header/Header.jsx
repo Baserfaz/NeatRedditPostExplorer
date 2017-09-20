@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 
-import TextField from "material-ui/TextField";
+import AutoComplete from 'material-ui/AutoComplete';
 import FlatButton from "material-ui/FlatButton";
 import Search from "material-ui/svg-icons/action/search";
 
@@ -16,26 +16,29 @@ class Header extends Component {
         this.currentSubreddit = props.currentSubReddit;
         this.changeSubredditState = props.changeSubredditState;
         this.getNewPosts = props.getNewPosts;
-        this.topFive = props.topFive;
+        this.viewedSubreddits = props.viewedSubreddits;
     }
 
     // for updating
     componentWillReceiveProps(props) {
         this.currentSubreddit = props.currentSubreddit;
         this.subreddit = props.subReddit;
-        this.topFive = props.topFive;
+        this.viewedSubreddits = props.viewedSubreddits;
     }
 
     render(props) {
         return (
             <div id="header">
             <h1>Neat Reddit Post Explorer</h1>
-            <h2>Currently reading posts from {this.currentSubreddit}</h2>
+            <h2>Currently reading posts from { this.currentSubreddit }</h2>
 
                 <div id="inputfield">
-                    <TextField
-                        hintText = { this.subreddit }
-                        onChange = { this.changeSubredditState }
+                    <AutoComplete
+                        hintText = 'Enter subreddits name'
+                        onUpdateInput = { value => this.changeSubredditState(value) }
+                        dataSource = { this.viewedSubreddits }
+                        filter = { AutoComplete.fuzzyFilter }
+                        maxSearchResults = { 5 }
                     />
                     <FlatButton
                         icon = { <Search /> }
