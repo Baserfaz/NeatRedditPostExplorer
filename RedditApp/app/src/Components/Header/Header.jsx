@@ -29,7 +29,7 @@ class Header extends Component {
     render(props) {
         return (
             <div id="header">
-            <h1><a href = '/'> Neat Reddit Post Explorer</a></h1>
+            <h1>Neat Reddit Post Explorer</h1>
             <h2>Currently reading posts from { this.currentSubreddit }</h2>
 
                 <div id="inputfield">
