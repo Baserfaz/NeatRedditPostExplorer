@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import FaChevronCircleRight from 'react-icons/lib/fa/chevron-circle-right';
 import FaUser from 'react-icons/lib/fa/user';
 import FaThumbsOUp from 'react-icons/lib/fa/thumbs-o-up';
+import FaFrownO from 'react-icons/lib/fa/frown-o';
 
 class Content extends Component {
 
@@ -35,6 +36,15 @@ class Content extends Component {
                             <img src = { post.thumbnail } alt='' />
                         </li>
                     )
+                }
+
+                
+                {
+                    this.posts.length === 0 &&
+                    <li className = 'post'>
+                        <h3>Nothing to see here, yet! <FaFrownO/></h3>
+                        <p>Start by searching a subreddit!</p>
+                    </li>
                 }
 
                 {

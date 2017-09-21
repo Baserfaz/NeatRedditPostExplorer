@@ -11,7 +11,7 @@ import Header from './Components/Header/Header';
 import Footer from './Components/Footer/Footer';
 import Content from './Components/Content/Content';
 
-import Snackbar from 'material-ui/Snackbar';
+// import Snackbar from 'material-ui/Snackbar';
 
 class App extends Component {
 
@@ -25,8 +25,8 @@ class App extends Component {
         this.url = 'https://www.reddit.com';
 
         this.getViewedSubreddits = this.getViewedSubreddits.bind(this);
-        this.openAlert = this.openAlert.bind(this);
-        this.closeAlert = this.closeAlert.bind(this);
+        // this.openAlert = this.openAlert.bind(this);
+        // this.closeAlert = this.closeAlert.bind(this);
     }
 
     componentDidMount() { this.getViewedSubreddits(true); }
@@ -54,8 +54,8 @@ class App extends Component {
         window.scrollTo(0, 0);
     }
 
-    closeAlert() { this.setState({ alertOpen: false }); }
-    openAlert() { this.setState({ alertOpen: true }); }
+    // closeAlert() { this.setState({ alertOpen: false }); }
+    // openAlert() { this.setState({ alertOpen: true }); }
 
     changeSubredditState(event) { 
         this.setState({ subreddit: '/r/' + event.target.value });
@@ -93,7 +93,7 @@ class App extends Component {
             })
             .catch(res => {
                 // no subreddits found
-                this.openAlert();
+                // this.openAlert();
             }
         );
     }
@@ -197,14 +197,14 @@ class App extends Component {
 
                     <Footer/>
 
-                    <Snackbar 
+                    {/* <Snackbar 
                         open = { this.state.alertOpen } 
                         message = 'No subreddits were found! '
                         autoHideDuration = { 5000 }
                         onRequestClose = { this.closeAlert }
                         onActionTouchTap = { this.closeAlert }
                         action = 'Close'
-                    />
+                    /> */}
 
                 </div>
             </MuiThemeProvider>
