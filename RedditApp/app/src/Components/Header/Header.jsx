@@ -34,11 +34,13 @@ class Header extends Component {
 
                 <div id="inputfield">
                     <AutoComplete
-                        hintText = 'Enter subreddits name'
+                        floatingLabelText = 'Search subreddits'
                         onUpdateInput = { value => this.changeSubredditState(value) }
                         dataSource = { this.viewedSubreddits }
                         filter = { AutoComplete.fuzzyFilter }
                         maxSearchResults = { 5 }
+                        openOnFocus = { true }
+                        animated = { true }
                     />
                     <FlatButton
                         icon = { <Search /> }

@@ -11,6 +11,8 @@ import Header from './Components/Header/Header';
 import Footer from './Components/Footer/Footer';
 import Content from './Components/Content/Content';
 
+import Snackbar from 'material-ui/Snackbar';
+
 class App extends Component {
 
     constructor() {
@@ -18,11 +20,13 @@ class App extends Component {
 
         firebase.initializeApp(DB_CONFIG);
 
-        this.state = { posts: [], subreddit: '', currentSubreddit: '', viewedSubreddits: [] };
+        this.state = { posts: [], subreddit: '', currentSubreddit: '', viewedSubreddits: [], alertOpen: false };
         this.count = 40;
         this.url = 'https://www.reddit.com';
 
         this.getViewedSubreddits = this.getViewedSubreddits.bind(this);
+        this.openAlert = this.openAlert.bind(this);
+        this.closeAlert = this.closeAlert.bind(this);
     }
 
     componentDidMount() { this.getViewedSubreddits(true); }
@@ -49,6 +53,9 @@ class App extends Component {
         // finally scroll back to top
         window.scrollTo(0, 0);
     }
+
+    closeAlert() { this.setState({ alertOpen: false }); }
+    openAlert() { this.setState({ alertOpen: true }); }
 
     changeSubredditState(event) { 
         this.setState({ subreddit: '/r/' + event.target.value });
@@ -85,7 +92,8 @@ class App extends Component {
 
             })
             .catch(res => {
-                alert('No subreddits found!');
+                // no subreddits found
+                this.openAlert();
             }
         );
     }
@@ -188,6 +196,15 @@ class App extends Component {
                     <Content posts = { this.state.posts } getMorePosts = { this.getMorePosts.bind(this) } />
 
                     <Footer/>
+
+                    <Snackbar 
+                        open = { this.state.alertOpen } 
+                        message = 'No subreddits were found! '
+                        autoHideDuration = { 5000 }
+                        onRequestClose = { this.closeAlert }
+                        onActionTouchTap = { this.closeAlert }
+                        action = 'Close'
+                    />
 
                 </div>
             </MuiThemeProvider>
